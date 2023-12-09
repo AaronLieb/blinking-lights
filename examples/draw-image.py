@@ -6,7 +6,7 @@ import libacmchristmas.tree
 
 
 async def main():
-    url = "wss://blinktest.acmcsuf.com/ws/018c2eee-6493-7577-b84a-ce9973a66630"
+    url = "wss://blinktest.acmcsuf.com/ws/018c4c15-7cd6-7407-80f7-640f781bee51"
 
     tree = libacmchristmas.tree.TreeController(url)
     await tree.connect()

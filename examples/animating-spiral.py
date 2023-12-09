@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 
+import math
 import numpy
 import cairo
 import asyncio
@@ -7,8 +8,8 @@ import libacmchristmas.tree
 
 
 async def main():
-    url = "wss://blinktest.acmcsuf.com/ws/018c34d7-8826-7577-a03f-55e8cd8b0042"
-    fps = 25
+    url = "wss://blinktest.acmcsuf.com/ws/018c4c1a-5167-7407-897e-27efb1b564d9"
+    fps = 10
 
     tree = libacmchristmas.tree.TreeController(url)
     await tree.connect()
@@ -17,49 +18,36 @@ async def main():
 
     surface = cairo.ImageSurface(cairo.FORMAT_ARGB32, tree.ix, tree.iy)
     context = cairo.Context(surface)
+    bg_color = (204/255, 255/255, 255/255)
+    fg_color = (0.9, 0.45, 0)
+    star_color = (0, 1.0, 1.0)
 
-    stepCount = 50
-    loopCount = 20
-    loopSpacing = 2
-    rotationSpeed = 0.2
-    strokeWidth = 5
-    strokeColor = (1.0, 1.0, 1.0)
 
-    # https://stackoverflow.com/a/12887250/5041327
-    rotation = 0
+    height = 0
+    dir = 2
     while True:
-        rotation += rotationSpeed
 
-        context.set_source_rgb(0, 0, 0)
-        context.paint()
+        context.set_source_rgb(*bg_color)
+        context.rectangle(0, 0, tree.ix, tree.iy)
+        context.fill()
 
-        context.set_source_rgb(*strokeColor)
-        context.set_line_width(strokeWidth)
+        context.set_source_rgb(*fg_color)
+        context.rectangle(0, tree.iy - height, tree.ix, height)
+        context.fill()
 
-        stepSize = (2 * numpy.pi) / stepCount
-        endAngle = 2 * numpy.pi * loopCount
-        finished = False
-        centerX = tree.ix / 2
-        centerY = tree.iy / 2
-
-        context.move_to(centerX, centerY)
-
-        angle = 0
-        while not finished:
-            if angle > endAngle:
-                angle = endAngle
-                finished = True
-
-            scalar = loopSpacing * angle
-            rotatedAngle = angle + rotation
-            x = centerX + scalar * numpy.cos(rotatedAngle)
-            y = centerY + scalar * numpy.sin(rotatedAngle)
-
-            context.line_to(x, y)
-            angle += stepSize
-
+        context.set_source_rgb(*star_color)
+        context.arc(tree.ix/2, tree.iy - height, 3, 0, 2*math.pi)
+        context.close_path()
+        context.set_source_rgb(*star_color)
         context.stroke()
 
+        # print(0, tree.iy - height, tree.ix, height)
+
+        if (height < 0):
+            dir = 2
+        elif (height >= tree.iy):
+            dir = -2
+        height += dir
         await tree.update_image(numpy.asarray(surface.get_data()))
         await asyncio.sleep(1 / fps)
 

@@ -7,7 +7,7 @@ import libacmchristmas.tree
 
 
 async def main():
-    url = "wss://blinktest.acmcsuf.com/ws/018c34d7-8826-7577-a03f-55e8cd8b0042"
+    url = "wss://blinktest.acmcsuf.com/ws/018c4c0e-a034-7407-a3fd-a3f0d7e53788"
     fps = 15
 
     tree = libacmchristmas.tree.TreeController(url)
